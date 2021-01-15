@@ -11,7 +11,7 @@ Enable Raspberry Pi I2C communication:
 ```bash
 ~$ sudo raspi-config
 ```
-Browse Interfacing Options >> I2C and select <Yes>
+Browse **Interfacing Options** >> **I2C** and select *Yes*
 
 ## Usage
 
