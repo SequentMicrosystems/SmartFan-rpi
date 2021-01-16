@@ -33,3 +33,7 @@ If you clone the repository any update can be made with the following commands:
 ~/SmartFan-rpi$ git pull
 ~/SmartFan-rpi$ sudo make install
 ``` 
+
+## [Python Library](https://github.com/SequentMicrosystems/SmartFan-rpi/tree/main/python)
+
+## [Example Loop](https://github.com/SequentMicrosystems/SmartFan-rpi/tree/main/python/examples)
