@@ -95,7 +95,7 @@ Turn the Smart Fan led blink on or off
 **blink** - Led blinking enable [0/1]
 
 
-### getKedBlink(stack)
+### getLedBlink(stack)
 
 Return the fan led blinking [0/1]
 
