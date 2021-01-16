@@ -100,3 +100,19 @@ Turn the Smart Fan led blink on or off
 Return the fan led blinking [0/1]
 
 **stack** - stack level, set with jumper [0/1]
+
+
+### setStopInt(stack, seconds)
+
+Set the stop interval in seconds. The fan will run 100% specified seconds then stop.
+
+**stack** - stack level, set with jumper [0/1]
+
+**seconds** - how long fan will run [1..65000]
+
+
+### getStopInt(stack)
+
+Return remaining time until fan will stop
+
+**stack** - stack level, set with jumper [0/1]
