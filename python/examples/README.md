@@ -21,4 +21,13 @@ The loop.py implement a basic PID loop as a Class, the constructor set the 3 coe
 ```bash
 fanPid = PID(10, .8, .1)
 ```
+For testing you can use stress tests to load the CPU. Install:
+```bash
+$ sudo apt install stress-ng mesa-utils
+```
+Example load the CPU for 10 seconds:
+```bash
+~$ stress-ng --cpu 8 --io 4 --vm 2 --vm-bytes 128M --fork 4 --timeout 10s
+```
+
 Once you are happy with the loop you can run the script at startup to maintain your Raspberry at the proper temperature.
