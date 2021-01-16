@@ -1,4 +1,4 @@
-[![sfan](../pictures/sequent.jpg)](https://www.sequentmicrosystems.com)
+[![sfan](../images/sequent.jpg)](https://www.sequentmicrosystems.com)
 
 # sfan
 
@@ -53,7 +53,7 @@ Set the Smart Fan power
 
 **stack** - stack level, set with jumper [0/1]
 
-**power** - Fan power  [1..100]
+**power** - Fan power  [0..100]
 
 
 ### getPower(stack)
