@@ -103,7 +103,7 @@ def setLedBlink(stack, blink):
     return 1
 
 
-def getKedBlink(stack):
+def getLedBlink(stack):
     if stack < 0 or stack > 1:
         raise ValueError('Invalid stack level [0..1]')
     BLINK_ADDRESS = 1
