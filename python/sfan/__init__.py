@@ -120,3 +120,33 @@ def getLedBlink(stack):
         return -1
     bus.close()
     return val
+
+
+def setStopInt(stack, seconds):
+    if stack < 0 or stack > 1:
+        raise ValueError('Invalid stack level [0..1]')
+    I2C_MEM_TIME_TO_STOP_SET = 5
+    try:
+        bus = smbus.SMBus(1)
+        bus.write_word_data(DEVICE_ADDRESS + stack, I2C_MEM_TIME_TO_STOP_SET, int(seconds))
+    except Exception as e:
+        print(e)
+        bus.close()
+        return -1
+    bus.close()
+    return 1
+
+
+def getStopInt(stack):
+    if stack < 0 or stack > 1:
+        raise ValueError('Invalid stack level [0..1]')
+    I2C_MEM_TIME_TO_STOP_REM = 7
+    try:
+        bus = smbus.SMBus(1)
+        val = bus.read_word_data(DEVICE_ADDRESS + stack, I2C_MEM_TIME_TO_STOP_REM)
+    except Exception as e:
+        print(e)
+        bus.close()
+        return -1
+    bus.close()
+    return val
