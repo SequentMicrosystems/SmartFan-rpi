@@ -58,7 +58,7 @@ void usage(void)
 		}
 		i++;
 	}
-	printf("Where: <id> = Board level id = 0..7\n");
+	printf("Where: <id> = Board level id = 0..1\n");
 	printf("Type ioplus -h <command> for more help\n");
 }
 
@@ -391,6 +391,9 @@ int fanBlinkGet(int dev, int* blink)
 	return ret;
 }
 
+
+
+
 int doSetPower(int argc, char *argv[]);
 const CliCmdType CMD_POWER_WRITE =
 {
@@ -643,6 +646,108 @@ int doGetBlink(int argc, char *argv[])
 	return OK;
 }
 
+int fanStopRemainingGet(int dev, int* seconds)
+{
+	u8 buff[2];
+	u16 aux16 = 0;
+	int resp = OK;
+
+	if (FAIL == i2cMem8Read(dev, I2C_MEM_TIME_TO_STOP_REM, buff, 2))
+	{
+		return FAIL;
+	}
+	memcpy(&aux16, buff, 2);
+	*seconds = aux16;
+
+	return resp;
+}
+
+int fanStopTimeSet(int dev, int seconds)
+{
+	u8 buff[2];
+	u16 aux16 = 0;
+
+	if ( (seconds < STOP_INT_MIN) || (seconds > STOP_INT_MAX))
+	{
+		printf("Invalid stop interval! [1..65000]");
+		return ERROR;
+	}
+	aux16 = (u16)seconds;
+	memcpy(buff, &aux16, 2);
+
+	return i2cMem8Write(dev, I2C_MEM_TIME_TO_STOP_SET, buff, 2);
+}
+int doSetStop(int argc, char *argv[]);
+const CliCmdType CMD_STOP_WRITE =
+	{
+		"stopwr",
+		2,
+		&doSetStop,
+		"\tstopwr:		Run for specified sec. 100%, then stop \n",
+		"\tUsage:		fan <id> stopwr <time>\n",
+		"",
+		"\tExample:	fan 0 stopwr 60  Set fan to run for one minute full power, then stop \n"};
+
+int doSetStop(int argc, char *argv[])
+{
+	int dev = 0;
+	int time = 0;
+
+	if ( (argc != 4))
+	{
+		printf("%s", CMD_STOP_WRITE.usage1);
+		exit(1);
+	}
+	dev = doBoardInit(atoi(argv[1]));
+	if (dev <= 0)
+	{
+		exit(1);
+	}
+
+	time = atoi(argv[3]);
+	if (OK != fanStopTimeSet(dev, time))
+	{
+		printf("Fail to communicate with the card.\n");
+		exit(1);
+	}
+	return OK;
+}
+
+int doGetStopRemaining(int argc, char *argv[]);
+const CliCmdType CMD_STOP_REMAINING_READ =
+	{
+		"stoprd",
+		2,
+		&doGetStopRemaining,
+		"\tstoprd:		Get the time in sec. until fan will stop \n",
+		"\tUsage:		fan <id> stoprd\n",
+		"",
+		"\tExample:	fan 0 stoprd  Get fan id #0 time in sec. until stop \n"};
+
+int doGetStopRemaining(int argc, char *argv[])
+{
+	int dev = 0;
+	int temp = 0;
+
+	if ( (argc != 3))
+	{
+		printf("%s", CMD_STOP_REMAINING_READ.usage1);
+		exit(1);
+	}
+	dev = doBoardInit(atoi(argv[1]));
+	if (dev <= 0)
+	{
+		exit(1);
+	}
+
+	if (OK != fanStopRemainingGet(dev, &temp))
+	{
+		printf("Fail to communicate with the card.\n");
+		exit(1);
+	}
+	printf("%d\n", temp);
+	return OK;
+}
 const CliCmdType *gCmdArray[] =
 {
 	&CMD_VERSION,
@@ -657,6 +762,8 @@ const CliCmdType *gCmdArray[] =
 	&CMD_TEMP_READ,
 	&CMD_BLINK_WRITE,
 	&CMD_BLINK_READ,
+	&CMD_STOP_WRITE,
+	&CMD_STOP_REMAINING_READ,
 
 	NULL}; //null terminated array of cli structure pointers
 

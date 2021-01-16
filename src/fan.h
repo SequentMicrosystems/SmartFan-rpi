@@ -3,15 +3,16 @@
 
 #include <stdint.h>
 
-
 #define RETRY_TIMES	10
-enum
+typedef enum
 {
 	I2C_MEM_FAN_POWER = 0,
 	I2C_MEM_BLINK_OFF,
 	I2C_MEM_INT_TEMP,
 	I2C_MEM_INT_TEMP_FS,
 	I2C_MEM_TEMP_SAFETY,
+	I2C_MEM_TIME_TO_STOP_SET, //2bytes
+	I2C_MEM_TIME_TO_STOP_REM = I2C_MEM_TIME_TO_STOP_SET + 2,
 
 	I2C_MEM_REVISION_HW_MAJOR_ADD = 100,
 	I2C_MEM_REVISION_HW_MINOR_ADD,
@@ -19,7 +20,7 @@ enum
 	I2C_MEM_REVISION_MINOR_ADD,
 
 	SLAVE_BUFF_SIZE,
-}I2C_MEM_ADD;
+} I2C_MEM_ADD;
 
 #define FAN_PWM_MAX	100
 #define FAN_PWM_MIN	0
@@ -29,6 +30,9 @@ enum
 
 #define STACK_MIN	0
 #define STACK_MAX 1
+
+#define STOP_INT_MIN	1
+#define STOP_INT_MAX 65000
 
 #define ERROR	-1
 #define OK		0
@@ -52,7 +56,5 @@ typedef enum
 } OutStateEnumType;
 
 int doBoardInit(int stack);
-
-
 
 #endif //SMARTFAN_H_
