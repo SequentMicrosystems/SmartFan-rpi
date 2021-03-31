@@ -2,7 +2,7 @@
 
 # sfan
 
-This is the python library to control the [Smart Fan Card for Raspberry Pi](https://sequentmicrosystems.com/product/smart-fan-hat-for-raspberry-pi/).
+This is the python library to control the [Smart Fan Card for Raspberry Pi](https://sequentmicrosystems.com/products/smart-fan-hat-for-raspberry-pi).
 
 ## Install
 
