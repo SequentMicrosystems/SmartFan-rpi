@@ -1,7 +1,7 @@
 [![SmartFan-rpi](images/sequent.jpg)](https://www.sequentmicrosystems.com)
 
 # SmartFan-rpi
-Command line, python library and Node-Red node for [Smart Fan](https://sequentmicrosystems.com/product/smart-fan-hat-for-raspberry-pi)
+Command line, python library and Node-Red node for [Smart Fan](https://sequentmicrosystems.com/products/smart-fan-hat-for-raspberry-pi)
 
 ![Smart Fan](images/s-fan.jpg)
 
