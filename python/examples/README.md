@@ -11,7 +11,8 @@ The script must be called with temperature parameter -t <value>. The parameter -
 
 The command
 ```bash
-$ python loop.py -t 50 -v
+$ ~/SmartFan-rpi/python/examples/
+~/SmartFan-rpi/python/examples $ python loop.py -t 50 -v
 ```
 keep Raspberry temperature at 50 degrees Celsius.
 
