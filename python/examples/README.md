@@ -5,6 +5,7 @@ The example implements a PID loop that maintains the raspberry temperature by co
 
 ## Usage 
 
+First install the python libary, instructions [here](https://github.com/SequentMicrosystems/SmartFan-rpi/tree/main/python)
 The script must be called with temperature parameter -t <value>. The parameter -v makes the script to report the Raspberry CPU temperature and fan power while running.
 
 ## Example
