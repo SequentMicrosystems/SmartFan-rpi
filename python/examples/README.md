@@ -5,7 +5,18 @@ The example implements a PID loop that maintains the raspberry temperature by co
 
 ## Usage 
 
-First install the python libary, instructions [here](https://github.com/SequentMicrosystems/SmartFan-rpi/tree/main/python)
+First install the python libary, instructions [here](https://github.com/SequentMicrosystems/SmartFan-rpi/tree/main/python),
+then install the gpiozero library for your prefered python version:
+
+Python 3:
+```bash
+pi@raspberrypi:~$ sudo apt install python3-gpiozero
+```
+Python 2:
+```bash
+pi@raspberrypi:~$ sudo apt install python-gpiozero
+```
+
 The script must be called with temperature parameter -t <value>. The parameter -v makes the script to report the Raspberry CPU temperature and fan power while running.
 
 ## Example
