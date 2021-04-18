@@ -59,7 +59,7 @@ void usage(void)
 		i++;
 	}
 	printf("Where: <id> = Board level id = 0..1\n");
-	printf("Type ioplus -h <command> for more help\n");
+	printf("Type fan -h <command> for more help\n");
 }
 
 int doBoardInit(int stack)
@@ -260,7 +260,7 @@ const CliCmdType CMD_BOARD =
 	2,
 	&doBoard,
 	"\tboard		Display the board status and firmware version number\n",
-	"\tUsage:		fan <stack> board\n",
+	"\tUsage:		fan <id> board\n",
 	"",
 	"\tExample:		fan 0 board   Display firmware version \n"};
 
