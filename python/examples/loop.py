@@ -3,6 +3,7 @@
 import sys, getopt, time
 import sfan as f
 from gpiozero import CPUTemperature
+import datetime
 
 
 class PID:
@@ -37,13 +38,19 @@ class PID:
             out = self.outLimLo
         return out
 
-
+def WriteToLog(temperature, fanPower):
+    f = open("SmartFan.csv", "a")
+    now = datetime.datetime.now()
+    f.write(now.strftime("%Y-%m-%d %H:%M:%S") + "," + str(temperature) + "," + str(fanPower) + "\n")
+    f.close()
 
 def main(argv):
     setTemp = 100
     verb = False
+    log = False
+    logInt = 60    
     try:
-        opts, args = getopt.getopt(argv, "ht:v", ["help", "temp=", "verbose"])
+        opts, args = getopt.getopt(argv, "ht:v", ["help", "temp=", "verbose", "log="])
     except getopt.error as err:
         # Output error, and return with an error code
         print(str(err))
@@ -56,11 +63,16 @@ def main(argv):
             verb = True
         elif opt in ("-t", "--temp"):
             setTemp = int(arg)
+        elif opt in ("-l", "--log"):
+            log = True
+            if len(arg) > 0:
+                logInt = int(arg)
     if setTemp < 30 or setTemp > 80:
         print('Invalid set temperature must be between 30 and 80 deg C!')
         sys.exit(3)
     cpu = CPUTemperature()
     fanPid = PID(10, .8, .1)
+    logCount = 0
     while(1):
         time.sleep(1)
         t = cpu.temperature
@@ -70,6 +82,11 @@ def main(argv):
             #print("CPU temperature:" + str(int(t)) + " FAN power: " + str(int(out)))
             sys.stdout.write("CPU temperature: %d   FAN power: %d%% \r" % (int(t), int(out)))
             sys.stdout.flush()
+        if log:
+            logCount+= 1
+            if logCount >= logInt:
+                logInt = 0
+                WriteToLog(t, out)    
 
 if __name__ == "__main__":
     main(sys.argv[1:])
