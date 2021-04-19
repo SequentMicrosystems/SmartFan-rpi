@@ -13,8 +13,12 @@ This is the python library to control the [Smart Fan Card for Raspberry Pi](http
 ~$ cd SmartFan-rpi/python/
 ~/SmartFan-rpi/python$ sudo python setup.py install
 ```
-If you use python3.x repace the last line with:
+If you use python3.x :
 ```
+~$ sudo apt-get update
+~$ sudo apt-get install build-essential python3-pip python3-dev python3-smbus git
+~$ git clone https://github.com/SequentMicrosystems/SmartFan-rpi.git
+~$ cd SmartFan-rpi/python/
 ~/SmartFan-rpi/python$ sudo python3 setup.py install
 ```
 ## Update
