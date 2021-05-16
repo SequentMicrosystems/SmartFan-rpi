@@ -28,10 +28,10 @@ $ cd ~/SmartFan-rpi/python/examples/
 ```
 keep Raspberry temperature at 50 degrees Celsius.
 
-The script have logging functionality also, if you use "-log" option whit parameter number of seconds between log entries, will create "SmartFan.csv" if not exist and append lines in CSV format 
+The script have logging functionality also, if you use "--log" option whit parameter number of seconds between log entries, will create "SmartFan.csv" if not exist and append lines in CSV format 
 Usage example:
 ```bash
-~/SmartFan-rpi/python/examples $ python loop.py -t 50 -log 10
+~/SmartFan-rpi/python/examples $ python loop.py -t 50 --log 10
 ```
 logs the Raspberry temperature and fan power at 10 seconds intervals
 
