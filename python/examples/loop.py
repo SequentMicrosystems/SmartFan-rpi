@@ -50,7 +50,7 @@ def main(argv):
     log = False
     logInt = 60    
     try:
-        opts, args = getopt.getopt(argv, "ht:v", ["help", "temp=", "verbose", "log="])
+        opts, args = getopt.getopt(argv, "hl:t:v", ["help", "temp=", "verbose", "log="])
     except getopt.error as err:
         # Output error, and return with an error code
         print(str(err))
@@ -85,7 +85,7 @@ def main(argv):
         if log:
             logCount+= 1
             if logCount >= logInt:
-                logInt = 0
+                logCount = 0
                 WriteToLog(t, out)    
 
 if __name__ == "__main__":
