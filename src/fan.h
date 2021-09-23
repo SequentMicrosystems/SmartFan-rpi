@@ -41,6 +41,9 @@ typedef enum
 #define ARG_CNT_ERR -3
 
 #define SLAVE_OWN_ADDRESS_BASE 0x03
+#define SLAVE_ALT_ADDRESS_BASE 0x2C
+
+#define FAN_V4_ENABLE_PIN 12
 
 typedef uint8_t u8;
 typedef uint16_t u16;

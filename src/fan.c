@@ -17,12 +17,15 @@
 #include "fan.h"
 #include "comm.h"
 #include "cli.h"
+#include "rpi_gpio.h"
 
 #define VERSION_BASE	(int)1
-#define VERSION_MAJOR	(int)0
+#define VERSION_MAJOR	(int)1
 #define VERSION_MINOR	(int)0
 
 #define UNUSED(X) (void)X      /* To avoid gcc/g++ warnings */
+
+int hwVer = 0;
 
 char *warranty =
 	"	       Copyright (c) 2016-2021 Sequent Microsystems\n"
@@ -75,13 +78,24 @@ int doBoardInit(int stack)
 	}
 	add = stack + SLAVE_OWN_ADDRESS_BASE;
 	dev = i2cSetup(add);
-	if (dev == -1)
+	if (dev < 0)
 	{
 		return ERROR;
 	}
 	if (ERROR == i2cMem8Read(dev, I2C_MEM_REVISION_MAJOR_ADD, buff, 1))
 	{
-		printf("Smart Fan id %d not detected\n", stack);
+		add = (stack ^ 1) + SLAVE_ALT_ADDRESS_BASE;
+		dev = i2cSetup(add);
+		if (dev < 0)
+		{
+			return ERROR;
+		}
+		if (ERROR != i2cRead(dev, buff, 1))
+		{
+			hwVer = 4;
+			return dev;
+		}
+		//printf("Smart Fan id %d not detected\n", stack);
 		return ERROR;
 	}
 	return dev;
@@ -106,7 +120,17 @@ int boardCheck(int stack)
 	}
 	if (ERROR == i2cMem8Read(dev, I2C_MEM_REVISION_MAJOR_ADD, buff, 1))
 	{
-
+		add = (stack ^ 1) + SLAVE_ALT_ADDRESS_BASE;
+		dev = i2cSetup(add);
+		if (dev < 0)
+		{
+			return ERROR;
+		}
+		if (ERROR != i2cRead(dev, buff, 1))
+		{
+			hwVer = 4;
+			return OK;
+		}
 		return ERROR;
 	}
 	return OK;
@@ -260,7 +284,7 @@ const CliCmdType CMD_BOARD =
 	2,
 	&doBoard,
 	"\tboard		Display the board status and firmware version number\n",
-	"\tUsage:		fan <id> board\n",
+	"\tUsage:		fan <stack> board\n",
 	"",
 	"\tExample:		fan 0 board   Display firmware version \n"};
 
@@ -281,14 +305,21 @@ int doBoard(int argc, char *argv[])
 		exit(1);
 	}
 
-	resp = i2cMem8Read(dev, I2C_MEM_REVISION_HW_MAJOR_ADD, buff, 4);
-	if (FAIL == resp)
+	if (hwVer < 4)
 	{
-		printf("Fail to read board info!\n");
-		exit(1);
+		resp = i2cMem8Read(dev, I2C_MEM_REVISION_HW_MAJOR_ADD, buff, 4);
+		if (FAIL == resp)
+		{
+			printf("Fail to read board info!\n");
+			exit(1);
+		}
+		printf("Hardware %02d.%02d, Firmware %02d.%02d \n", (int)buff[0],
+			(int)buff[1], (int)buff[2], (int)buff[3]);
 	}
-	printf("Hardware %02d.%02d, Firmware %02d.%02d \n", (int)buff[0],
-		(int)buff[1], (int)buff[2], (int)buff[3]);
+	else
+	{
+		printf("Hardware version 4.0\n");
+	}
 	return OK;
 }
 
@@ -302,23 +333,58 @@ int fanPwSet(int dev, int power)
 		printf("Invalid fan power value! [0..100]\n");
 		return ERROR;
 	}
-	buff = (u8)power;
-	resp = i2cMem8Write(dev, I2C_MEM_FAN_POWER, &buff, 1);
+	if (hwVer < 4)
+	{
+		buff = (u8)power;
+		resp = i2cMem8Write(dev, I2C_MEM_FAN_POWER, &buff, 1);
+	}
+	else
+	{
+		if (power > 0)
+		{
+			GPIOWrite(FAN_V4_ENABLE_PIN, 1);
+		}
+		else
+		{
+			GPIOWrite(FAN_V4_ENABLE_PIN, 0);
+		}
+		float val = 0;
+		val = power * 2.55;
+		if (val > 255)
+		{
+			val = 255;
+		}
+		val = 255 - val;
+		buff = (uint8_t)round(val);
+		resp = i2cMem8Write(dev, 0x00, &buff, 1);
+	}
 	return resp;
 }
 
 int fanPwGet(int dev, int* power)
 {
 	u8 buff = 0;
-	int resp = OK;
 
-	if (FAIL == i2cMem8Read(dev, I2C_MEM_FAN_POWER, &buff, 1))
+	if (hwVer < 4)
 	{
-		return FAIL;
+		if (FAIL == i2cMem8Read(dev, I2C_MEM_FAN_POWER, &buff, 1))
+		{
+			return FAIL;
+		}
+		*power = buff;
 	}
-	*power = buff;
-
-	return resp;
+	else
+	{
+		if (FAIL == i2cRead(dev, &buff, 1))
+		{
+			return FAIL;
+		}
+		buff = 255 - buff;
+		float val = 0;
+		val = buff / 2.55;
+		*power = (int)round(val);
+	}
+	return OK;
 }
 
 int fanTempGet(int dev, int* temperature)
@@ -390,9 +456,6 @@ int fanBlinkGet(int dev, int* blink)
 	}
 	return ret;
 }
-
-
-
 
 int doSetPower(int argc, char *argv[]);
 const CliCmdType CMD_POWER_WRITE =
@@ -492,7 +555,11 @@ int doSetSafetyTemp(int argc, char *argv[])
 	{
 		exit(1);
 	}
-
+	if (hwVer >= 4)
+	{
+		printf("Not available for this hardware version\n");
+		exit(1);
+	}
 	temp = atoi(argv[3]);
 	if (OK != fanSafeTempSet(dev, temp))
 	{
@@ -528,7 +595,11 @@ int doGetSafetyTemp(int argc, char *argv[])
 	{
 		exit(1);
 	}
-
+	if (hwVer >= 4)
+	{
+		printf("Not available for this hardware version\n");
+		exit(1);
+	}
 	if (OK != fanSafeTempGet(dev, &temp))
 	{
 		printf("Fail to communicate with the card.\n");
@@ -564,7 +635,11 @@ int doGetTemp(int argc, char *argv[])
 	{
 		exit(1);
 	}
-
+	if (hwVer >= 4)
+	{
+		printf("Not available for this hardware version\n");
+		exit(1);
+	}
 	if (OK != fanTempGet(dev, &temp))
 	{
 		printf("Fail to communicate with the card.\n");
@@ -600,7 +675,11 @@ int doSetBlink(int argc, char *argv[])
 	{
 		exit(1);
 	}
-
+	if (hwVer >= 4)
+	{
+		printf("Not available for this hardware version\n");
+		exit(1);
+	}
 	blink = atoi(argv[3]);
 	if (OK != fanBlinkSet(dev, blink))
 	{
@@ -636,7 +715,11 @@ int doGetBlink(int argc, char *argv[])
 	{
 		exit(1);
 	}
-
+	if (hwVer >= 4)
+	{
+		printf("Not available for this hardware version\n");
+		exit(1);
+	}
 	if (OK != fanBlinkGet(dev, &blink))
 	{
 		printf("Fail to communicate with the card.\n");
@@ -703,7 +786,11 @@ int doSetStop(int argc, char *argv[])
 	{
 		exit(1);
 	}
-
+	if (hwVer >= 4)
+	{
+		printf("Not available for this hardware version\n");
+		exit(1);
+	}
 	time = atoi(argv[3]);
 	if (OK != fanStopTimeSet(dev, time))
 	{
@@ -715,14 +802,14 @@ int doSetStop(int argc, char *argv[])
 
 int doGetStopRemaining(int argc, char *argv[]);
 const CliCmdType CMD_STOP_REMAINING_READ =
-	{
-		"stoprd",
-		2,
-		&doGetStopRemaining,
-		"\tstoprd:		Get the time in sec. until fan will stop \n",
-		"\tUsage:		fan <id> stoprd\n",
-		"",
-		"\tExample:	fan 0 stoprd  Get fan id #0 time in sec. until stop \n"};
+{
+	"stoprd",
+	2,
+	&doGetStopRemaining,
+	"\tstoprd:		Get the time in sec. until fan will stop \n",
+	"\tUsage:		fan <id> stoprd\n",
+	"",
+	"\tExample:	fan 0 stoprd  Get fan id #0 time in sec. until stop \n"};
 
 int doGetStopRemaining(int argc, char *argv[])
 {
@@ -739,7 +826,11 @@ int doGetStopRemaining(int argc, char *argv[])
 	{
 		exit(1);
 	}
-
+	if (hwVer >= 4)
+	{
+		printf("Not available for this hardware version\n");
+		exit(1);
+	}
 	if (OK != fanStopRemainingGet(dev, &temp))
 	{
 		printf("Fail to communicate with the card.\n");

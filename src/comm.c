@@ -40,7 +40,6 @@
 #define I2C_SMBUS_BLOCK_MAX	512	/* As specified in SMBus standard */
 #define I2C_SMBUS_I2C_BLOCK_MAX	512	/* Not specified but we use same structure */
 
-
 int i2cSetup(int addr)
 {
 	int file;
@@ -59,6 +58,23 @@ int i2cSetup(int addr)
 	}
 
 	return file;
+}
+
+int i2cRead(int dev, uint8_t* buff, int size)
+{
+	if (NULL == buff)
+	{
+		return -1;
+	}
+	if (size > I2C_SMBUS_BLOCK_MAX)
+	{
+		return -1;
+	}
+	if (read(dev, buff, size) != size)
+	{
+		return -1;
+	}
+	return 0; //OK
 }
 
 int i2cMem8Read(int dev, int add, uint8_t* buff, int size)
@@ -114,6 +130,4 @@ int i2cMem8Write(int dev, int add, uint8_t* buff, int size)
 	}
 	return 0;
 }
-
-
 
