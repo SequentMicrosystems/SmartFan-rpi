@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sfan",
-    version="1.0.0",
+    version="1.1.0",
     author="Sequent Microsystems",
     author_email="olcitu@gmail.com",
     description="A set of functions to control Sequent Microsystems Smart Fan card",
