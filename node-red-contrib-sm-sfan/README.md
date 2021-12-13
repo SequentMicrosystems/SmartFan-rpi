@@ -30,7 +30,7 @@ After install and restart the node-red you will see on the node palete, under Se
 
 ### SFAN Power node
 
-This node provides a connection to an Sequent Microsystems Smart Fan blow power.
+This node provides a connection to an Sequent Microsystems Smart Fan card.
 The card stack level can be set in the node dialog box or dynamically through ```msg.stack``` `.
 You can set the power from 0% to 100% thru ```msg.payload``` controling fan speed.
 
