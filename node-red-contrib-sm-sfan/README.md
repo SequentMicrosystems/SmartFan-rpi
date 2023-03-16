@@ -6,6 +6,12 @@ This is the node-red node to control Sequent Microsystems [Smart Fan Hat](https:
 
 Clone or update the repository, follow the instrutions fron the [first page.](https://github.com/SequentMicrosystems/SmartFan-rpi)
 
+Recently Node-RED install does not include the *rpio* so you have to mannualy install it:
+
+```bash
+~$ npm install rpio
+```
+
 In your node-red user directory, tipicaly ~/.node-red,
 
 ```bash

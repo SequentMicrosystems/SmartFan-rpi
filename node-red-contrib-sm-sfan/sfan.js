@@ -2,8 +2,12 @@
 module.exports = function(RED) {
     "use strict";
     var I2C = require("i2c-bus");
+	var rpio = require("rpio");
+	
     const DEFAULT_HW_ADD = 0x03;
+	const ALTERNATE_HW_ADD = 0x2c;
     const I2C_MEM_FAN_POWER = 0; 
+	const FAN_ENABLE_PIN = 12;
 
     function PowerNode(n) {
         RED.nodes.createNode(this, n);
@@ -56,7 +60,27 @@ module.exports = function(RED) {
                 var intVal = parseInt(myPayload);
                 node.port.writeByte(hwAdd, I2C_MEM_FAN_POWER, intVal,  function(err, size, res) {
                     if (err) { 
-                        node.error(err, msg);
+						hwAdd = (stack ^ 1) + ALTERNATE_HW_ADD;
+						var val = parseInt(intVal * 2.55);
+						val = 255 - val;
+						node.port.writeByte(hwAdd, 0x00, val, function(err, size, res){
+							if(err) {
+								node.error(err, msg);
+							}
+							else
+							{
+								rpio.open(FAN_ENABLE_PIN, rpio.OUTPUT);
+								if(intVal == 0)
+								{
+									rpio.write(FAN_ENABLE_PIN, rpio.LOW);
+								}
+								else
+								{
+									rpio.write(FAN_ENABLE_PIN, rpio.HIGH);
+								}
+							}
+						});
+						
                     } 
                     else{
                        
