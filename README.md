@@ -7,11 +7,17 @@ Command line, python library and Node-Red node for [Smart Fan](https://sequentmi
 
 ## Setup
 
-Enable Raspberry Pi I2C communication:
+### Enable Raspberry Pi I2C communication:
 ```bash
 ~$ sudo raspi-config
 ```
 Browse **Interfacing Options** >> **I2C** and select *Yes*
+
+### Install **gpiod**:
+```bash
+~$ sudo apt install libgpiod-dev
+```
+
 
 ## Usage
 
