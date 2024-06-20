@@ -5,8 +5,15 @@ ifneq ($V,1)
 Q ?= @
 endif
 
+RASP=$$(cat /proc/cpuinfo | grep Model | cut -d ":" -f 2 | grep Pi | cut -d "i" -f 2 | cut -d "M" -f 1 | tr -d ' ')
+NUM:=$(shell echo $(RASP))
 CC	= gcc
-CFLAGS	= $(DEBUG) -Wall -Wextra $(INCLUDE) -Winline -pipe 
+ifeq ($(NUM),5)
+	CFLAGS	= $(DEBUG) -Wall -Wextra $(INCLUDE) -Winline -pipe -DRPI5
+else
+	CFLAGS	= $(DEBUG) -Wall -Wextra $(INCLUDE) -Winline -pipe
+endif
+
 
 LDFLAGS	= -L$(DESTDIR)$(PREFIX)/lib
 LIBS    = -lpthread -lrt -lm -lcrypt -lgpiod
@@ -30,12 +37,18 @@ clean:
 	$Q echo "[Clean]"
 	$Q rm -f $(OBJ) fan *~ core tags *.bak
 
+.PHONY:	test
+test:
+	$Q echo "[TEEST]"
+	$Q echo "Raspberry Pi" $(NUM) "detected"
+	$Q echo "Compile flags:" $(CFLAGS)
+
 .PHONY:	install
 install: fan
 	$Q echo "[Install]"
 	$Q cp fan		$(DESTDIR)$(PREFIX)/bin
 ifneq ($(WIRINGPI_SUID),0)
-	$Q chown root.root	$(DESTDIR)$(PREFIX)/bin/fan
+	$Q chown root:root	$(DESTDIR)$(PREFIX)/bin/fan
 	$Q chmod 4755		$(DESTDIR)$(PREFIX)/bin/fan
 endif
 #	$Q mkdir -p		$(DESTDIR)$(PREFIX)/man/man1

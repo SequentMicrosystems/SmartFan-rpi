@@ -20,7 +20,11 @@
 
 int GPIOWrite(int pin, int value)
 {
+	#ifdef RPI5
+	char *chipname = "gpiochip4";
+	#else
 	char *chipname = "gpiochip0";
+	#endif
 	struct gpiod_chip *chip;
 	struct gpiod_line *line;
 	int ret;
