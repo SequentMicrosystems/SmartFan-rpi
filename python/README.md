@@ -7,33 +7,26 @@ This is the python library to control the [Smart Fan Card for Raspberry Pi](http
 ## Install
 
 ```bash
-~$ sudo apt-get update
-~$ sudo apt-get install build-essential python-pip python-dev python-smbus git
-~$ git clone https://github.com/SequentMicrosystems/SmartFan-rpi.git
-~$ cd SmartFan-rpi/python/
-~/SmartFan-rpi/python$ sudo python setup.py install
+sudo pip install SMsfan
 ```
-If you use python3.x :
+
+or
+
+```bash
+sudo pip3 install SMsfan
 ```
-~$ sudo apt-get update
-~$ sudo apt-get install build-essential python3-pip python3-dev python3-smbus git
-~$ git clone https://github.com/SequentMicrosystems/SmartFan-rpi.git
-~$ cd SmartFan-rpi/python/
-~/SmartFan-rpi/python$ sudo python3 setup.py install
-```
+
 ## Update
 
 ```bash
-~$ cd SmartFan-rpi/
-~/SmartFan-rpi$ git pull
-~$ cd SmartFan-rpi/python/
-~/SmartFan-rpi/python$ sudo python setup.py install
+sudo pip install SMsfan -U
 ```
-If you use python3.x repace the last line with:
+
+or
+
+```bash
+sudo pip3 install SMsfan -U
 ```
-~/SmartFan-rpi/python$ sudo python3 setup.py install
-```
-## Usage 
 
 Now you can import the sfan library and use its functions. To test, read processor temperature from the Smart Fan with stack level 0:
 
