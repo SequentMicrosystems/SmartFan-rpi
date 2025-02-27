@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="SMsfan",
-    version="1.1.3",
+    name="smsfan",
+    version="1.1.4",
     author="Sequent Microsystems",
     author_email="olcitu@gmail.com",
     description="A set of functions to control Sequent Microsystems Smart Fan card",

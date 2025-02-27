@@ -52,6 +52,6 @@ Mkfile.old
 dkms.conf
 
 # Python build files
-python/SMsfan.egg-info/
+python/*.egg-info/
 python/build/
 python/dist/
