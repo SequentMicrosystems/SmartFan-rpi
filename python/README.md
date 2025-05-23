@@ -4,6 +4,11 @@
 
 This is the python library to control the [Smart Fan Card for Raspberry Pi](https://sequentmicrosystems.com/products/smart-fan-hat-for-raspberry-pi).
 
+For Raspberry Pi 5, the following is also required
+```bash
+sudo apt install python3-libgpiod
+```
+
 ## Install
 
 ```bash

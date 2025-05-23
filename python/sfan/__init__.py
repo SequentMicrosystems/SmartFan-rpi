@@ -1,10 +1,25 @@
 import smbus2 as smbus
-import struct
-import RPi.GPIO as GPIO
+import warnings
 
-# bus = smbus.SMBus(1)    # 0 = /dev/i2c-0 (port I2C0), 1 = /dev/i2c-1 (port I2C1)
+from gpiozero.devices import PinFactoryFallback
+warnings.filterwarnings("ignore", category=PinFactoryFallback)
 
-DEVICE_ADDRESS = 0x03  # 7 bit address (will be left shifted to add the read write bit)
+from gpiozero import OutputDevice
+GPIO_AVAILABLE = True
+
+GPIO_PIN = 12
+
+fan_control_pin = None
+if GPIO_AVAILABLE:
+    try:
+        fan_control_pin = OutputDevice(GPIO_PIN)
+        print(f"GPIO control initialized on pin {GPIO_PIN}")
+    except Exception as e:
+        print(f"GPIO initialization error: {e}")
+        print("Continuing without GPIO control")
+        fan_control_pin = None
+
+DEVICE_ADDRESS = 0x03
 DEVICE_ALT_ADDRESS = 0x2C
 
 
@@ -36,22 +51,28 @@ def setPower(stack, power):
         return -1
     if address > 4:
         val = 255 - power * 2.55
-        power = int(val)
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(12, GPIO.OUT)
-        if power < 255:
-           GPIO.output(12, GPIO.HIGH)
-        else:
-            GPIO.output(12, GPIO.LOW)
+        power_val = int(val)
+        if fan_control_pin is not None:
+            try:
+                if power_val < 255:
+                    fan_control_pin.on()
+                    print("Setting GPIO HIGH")
+                else:
+                    fan_control_pin.off()
+                    print("Setting GPIO LOW")
+            except Exception as e:
+                print(f"GPIO control error: {e}")
+                print("Continuing without GPIO control")
+    
     try:
         bus = smbus.SMBus(1)
         bus.write_byte_data(address, POWER_ADDRESS, power)
+        bus.close()
     except Exception as e:
         print(e)
         bus.close()
         return -1
-    bus.close()
+    
     return 1
 
 

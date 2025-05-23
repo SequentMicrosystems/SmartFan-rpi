@@ -14,9 +14,14 @@ setuptools.setup(
 	license='MIT',
     url="https://www.sequentmicrosystems.com",
     packages=setuptools.find_packages(),
-    install_requires=[
-        "smbus2", "RPi.GPIO"
+    install_requires = [
+        "smbus2",
+        "gpiozero>=2.0.0",
+        "RPi.GPIO",
     ],
+    extras_require={
+        'rpi5': ['lgpio'],
+    },
     classifiers=[
         'Development Status :: 3 - Alpha',
         "License :: OSI Approved :: MIT License",
