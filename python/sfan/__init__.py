@@ -13,10 +13,10 @@ fan_control_pin = None
 if GPIO_AVAILABLE:
     try:
         fan_control_pin = OutputDevice(GPIO_PIN)
-        print(f"GPIO control initialized on pin {GPIO_PIN}")
+        #print(f"GPIO control initialized on pin {GPIO_PIN}")
     except Exception as e:
-        print(f"GPIO initialization error: {e}")
-        print("Continuing without GPIO control")
+        #print(f"GPIO initialization error: {e}")
+        #print("Continuing without GPIO control")
         fan_control_pin = None
 
 DEVICE_ADDRESS = 0x03
@@ -51,19 +51,16 @@ def setPower(stack, power):
         return -1
     if address > 4:
         val = 255 - power * 2.55
-        power_val = int(val)
+        power = int(val)
         if fan_control_pin is not None:
             try:
-                if power_val < 255:
+                if power < 255:
                     fan_control_pin.on()
-                    print("Setting GPIO HIGH")
                 else:
                     fan_control_pin.off()
-                    print("Setting GPIO LOW")
             except Exception as e:
                 print(f"GPIO control error: {e}")
                 print("Continuing without GPIO control")
-    
     try:
         bus = smbus.SMBus(1)
         bus.write_byte_data(address, POWER_ADDRESS, power)
