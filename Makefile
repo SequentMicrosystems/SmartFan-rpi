@@ -5,6 +5,7 @@ ifneq ($V,1)
 Q ?= @
 endif
 
+
 RASP=$$(cat /proc/cpuinfo | grep Model | cut -d ":" -f 2 | grep Pi | cut -d "i" -f 2 | cut -d "M" -f 1 | tr -d ' ')
 NUM:=$(shell echo $(RASP))
 CC	= gcc
@@ -14,6 +15,14 @@ else
 	CFLAGS	= $(DEBUG) -Wall -Wextra $(INCLUDE) -Winline -pipe
 endif
 
+
+# detect libgpiod version (adjust pkg-config name if your distro uses a different name)
+LG_VER=$(shell pkg-config --modversion libgpiod 2>/dev/null || echo 0)
+LG_MAJOR=$(shell echo $(LG_VER) | cut -d. -f1)
+
+ifeq ($(shell test $(LG_MAJOR) -ge 2 && echo yes),yes)
+    CFLAGS += -DGPIOD_V2_API
+endif
 
 LDFLAGS	= -L$(DESTDIR)$(PREFIX)/lib
 LIBS    = -lpthread -lrt -lm -lcrypt -lgpiod
